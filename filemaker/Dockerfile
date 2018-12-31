@@ -1,9 +1,13 @@
 FROM python:3.7-alpine
 
-# Python package requirements
-COPY ./requirements.txt /typhoon/filemaker/requirements.txt
+# Setup
+RUN mkdir /typhoon
+WORKDIR /typhoon
 
-RUN pip3 install -U pip --no-cache-dir && pip3 install -r /typhoon/filemaker/requirements.txt --no-cache-dir
+# Python package requirements
+COPY ./requirements.txt /typhoon/requirements.txt
+
+RUN pip3 install -U pip --no-cache-dir && pip3 install -r /typhoon/requirements.txt --no-cache-dir
 
 # Python source code
 COPY . /typhoon
@@ -12,8 +16,7 @@ COPY . /typhoon
 EXPOSE 8056
 
 # Set up Python path
-ENV PYTHONPATH "/typhoon/filemaker"
-WORKDIR "/typhoon/filemaker"
+ENV PYTHONPATH "/typhoon"
 
 # Launch the script which will run the server
-CMD ['python3', 'src/server.py']
+CMD ["python3", "src/server.py"]

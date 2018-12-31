@@ -2,7 +2,7 @@ version: "3"
 
 services:
   code:
-    image: 2015bernarda-typhoon-filemaker-back-python
+    image: typhoon-filemaker-back
     container_name: 2015bernarda_typhoon-filemaker-back_python
     restart: always
     environment:
