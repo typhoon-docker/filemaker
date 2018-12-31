@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx
+    container_name: {{ login }}_{{ website_name }}
+    restart: always
+    environment:
+      - VIRTUAL_HOST={{ website_name }}.typhoon.viarezo.fr
+      - LETSENCRYPT_HOST={{ website_name }}.typhoon.viarezo.fr
+      - LETSENCRYPT_EMAIL={{ email_address }}
+    volumes:
+      - /sites/{{ login }}/{{ website_name }}/{% if root_folder %}{{ root_folder }}/{% endif %}:/usr/share/nginx/html
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

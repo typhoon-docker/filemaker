@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  nginx:
+    image: typhoon-filemaker
+    container_name: 2015bernarda_typhoon-filemaker
+    restart: always
+    environment:
+      - VIRTUAL_HOST=typhoon-filemaker.typhoon.viarezo.fr
+      - LETSENCRYPT_HOST=typhoon-filemaker.typhoon.viarezo.fr
+      - LETSENCRYPT_EMAIL=aymeric.bernard@student.ecp.fr
+    # volumes:
+      # - /sites/2015bernarda/typhoon-filemaker/filemaker-react/build:/usr/share/nginx/html
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

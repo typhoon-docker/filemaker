@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  code:
+    image: 2015bernarda-typhoon-filemaker-back-python
+    container_name: 2015bernarda_typhoon-filemaker-back_python
+    restart: always
+    environment:
+      - VIRTUAL_HOST=typhoon-filemaker-back.typhoon.viarezo.fr
+      - LETSENCRYPT_HOST=typhoon-filemaker-back.typhoon.viarezo.fr
+      - LETSENCRYPT_EMAIL=aymeric.bernard@student.ecp.fr
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

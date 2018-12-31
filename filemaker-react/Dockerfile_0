@@ -1,0 +1,18 @@
+FROM node:8.15-alpine
+
+# Package requirements
+COPY package.json yarn.lock /typhoon/
+RUN yarn && yarn global add serve
+
+# Source code
+COPY . /typhoon
+
+# Change workdir and build the code
+WORKDIR "/typhoon"
+RUN yarn build
+
+# Expose the ports for the static server
+EXPOSE 5000
+
+# Launch the script which will run the server
+CMD ["serve", "-s", "build"]

@@ -1,0 +1,25 @@
+FROM python:3.7-alpine
+
+{% if requirements_path %}# Python package requirements
+COPY /sites/{{ login }}/{{ website_name }}/{{ requirements_path }} /typhoon/{{ requirements_path }}
+
+RUN pip3 install -U pip --no-cache-dir && pip3 install -r /typhoon/{{ requirements_path }} --no-cache-dir
+{% endif %}
+
+# Python source code
+COPY /sites/{{ login }}/{{ website_name }} /typhoon
+
+{% if build_script %}RUN cd /typhoon && {{ build_script }}
+{% endif %}
+
+# Expose the ports for the Flask server
+{% for port in exposed_ports %}EXPOSE {{ port }}
+{% endfor %}
+
+# Set up Python path
+ENV PYTHONPATH "/typhoon{% if root_folder %}/{{ root_folder }}{% endif %}"
+WORKDIR "/typhoon{% if root_folder %}/{{ root_folder }}{% endif %}"
+
+{% if start_script %}# Launch the script which will run the server
+CMD {{ start_script }}
+{% endif %}

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Typhoon filemaker</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.4/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            namespace = '/typhoon';
+
+            // Connect to the Socket.IO server.
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+            socket.on('connect', function() {
+                socket.emit('my_event', {data: "I'm connected!"});
+            });
+
+            socket.on('dockerfile', function(msg) {
+                $('#dockerfile').html('<pre>' + msg['data'] + '</pre>');
+            });
+
+            socket.on('docker_compose', function(msg) {
+                $('#docker_compose').html('<pre>' + msg['data'] + '</pre>');
+            });
+
+            const allFormData = () => {
+                return {
+                {% for k in labels %}{{ k }}: $('#{{ k }}_data').val(),{% endfor %}
+                }
+            };
+
+            // Handlers for the different forms in the page.
+            // These accept data from the user and send it to the server in a
+            // variety of ways
+            $('form#params_form').submit(function(event) {
+                socket.emit('form_submitted', {data: allFormData()});
+                return false;
+            });
+
+            $('form#params_form').change(function(event) {
+                socket.emit('form_changed', {data: allFormData()});
+                return false;
+            });
+
+            // create_form({{ all_questions }});
+        });
+    </script>
+</head>
+<body>
+    <h1>Making Dockerfile and docker-compose.yml files</h1>
+
+    <form id="params_form" method="POST" action='#'>
+        {% for k in labels %}
+        {{ labels[k] }}:
+        <input type="text" name="{{ k }}_data" id="{{ k }}_data" placeholder="{{ placeholders[k] }}">
+        <br/>
+        {% endfor %}
+        <input type="submit" value="Send">
+    </form>
+
+    <h2>Dockerfile:</h2>
+    <div id="dockerfile"></div>
+
+    <h2>docker-compose.yml:</h2>
+    <div id="docker_compose"></div>
+</body>
+</html>
