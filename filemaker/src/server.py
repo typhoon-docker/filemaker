@@ -7,10 +7,11 @@ Flask server to create and display Dockerfile and docker-compose.yml files
 
 import os
 from glob import glob
+import re
 from pprint import pprint
-from typing import Dict, List, Any
+from typing import Dict, Any
 
-from flask import Flask, request
+from flask import Flask
 from flask_socketio import SocketIO, emit
 from jinja2 import Environment, FileSystemLoader
 
@@ -31,9 +32,9 @@ known_docker_compose_templates = [os.path.split(fn)[1][:-11] for fn in docker_co
 
 
 default_params = {q.get("label"): q.get("default") for q in all_questions_dict}
-print("--- Default params ---")
-pprint(default_params)
-print('--- ---')
+# print("--- Default params ---")
+# pprint(default_params)
+# print('--- ---')
 
 
 # @app.route("/")
@@ -48,7 +49,7 @@ def test_connect():
 
 @socketio.on("disconnect", namespace="/typhoon")
 def test_disconnect():
-    print("Client disconnected", request.sid)
+    print("Client disconnected")
 
 
 @socketio.on("questions", namespace="/typhoon")
@@ -64,13 +65,22 @@ def form_changed(message):
         if d.get("label") in params:
             params[d.get("label")] = d.get("answer")
 
-    params["start_script"] = params["start_script"].split(" ")  # TODO
-    if params["exposed_ports"]:
-        try:
-            params["exposed_ports"] = [int(p) for p in params["exposed_ports"].split(",")]  # TODO
-        except ValueError:
-            params["exposed_ports"] = []
+    # Cut the start script: 'python "my server.py"' -> '["python", "my server.py"]'
+    args = re.findall(r"""[^\s"']+|"[^"]*"|'[^']*'""", params["start_script"])
+    args = ['"' + a.strip('"') + '"' for a in args]
+    params["start_script"] = "[" + ", ".join(args) + "]"
 
+    # Cut the exposed ports
+    if params["exposed_ports"]:
+        ports = []
+        for p in params["exposed_ports"].split(","):
+            try:
+                ports.append(int(p))
+            except ValueError:
+                pass
+        params["exposed_ports"] = ports
+
+    # Search for the right templates
     dockerfile_template = None
     docker_compose_template = None
     template_data = template_selector.get(params["template"])
@@ -78,6 +88,7 @@ def form_changed(message):
         dockerfile_template = template_data.get("dockerfile")
         docker_compose_template = template_data.get("docker_compose")
 
+    # Check if the selected template exists
     if dockerfile_template is not None and dockerfile_template not in known_dockerfile_templates:
         print(f"WARN: Invalid Dockerfile template: {dockerfile_template}")
         dockerfile_template = None
@@ -86,24 +97,28 @@ def form_changed(message):
         print(f"WARN: Invalid docker_compose template: {docker_compose_template}")
         docker_compose_template = None
 
+    # Create the Dockerfile content
     dockerfile_output = "No Dockerfile"
     if dockerfile_template is not None:
         dockerfile_template = env_dockerfile.get_template(dockerfile_template + ".jinja2")
         dockerfile_output = dockerfile_template.render(**params)
-    emit("dockerfile", {"data": dockerfile_output})
 
+    # Create the docker-compose content
     docker_compose_output = "No docker-compose"
     if docker_compose_template is not None:
         docker_compose_template = env_docker_compose.get_template(docker_compose_template + ".yml.jinja2")
         docker_compose_output = docker_compose_template.render(**params)
+
+    # Send through socket
+    emit("dockerfile", {"data": dockerfile_output})
     emit("docker_compose", {"data": docker_compose_output})
 
 
 if __name__ == "__main__":
-    env_server = Environment(loader=FileSystemLoader(resolve_path("templates_server")))
+    # env_server = Environment(loader=FileSystemLoader(resolve_path("templates_server")))
+    # index_template = env_server.get_template("index.html")
+
     env_dockerfile = Environment(loader=FileSystemLoader(resolve_path("templates_dockerfile")))
     env_docker_compose = Environment(loader=FileSystemLoader(resolve_path("templates_docker_compose")))
-
-    index_template = env_server.get_template("index.html")
 
     socketio.run(app, host="0.0.0.0", port=8056, debug=True)

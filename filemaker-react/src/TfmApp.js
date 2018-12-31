@@ -17,7 +17,7 @@ class TfmApp extends Component {
       questionsData: {},                   // Details for each question, by id
     }
 
-    this.socket = io('http://192.168.0.11:8056/typhoon');
+    this.socket = io('https://typhoon-filemaker-back.typhoon.viarezo.fr/typhoon');
 
     // When receiving the questions, get their label and data, and fill the state with them
     this.socket.on('questions', msg => {

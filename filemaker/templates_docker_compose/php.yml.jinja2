@@ -26,10 +26,10 @@ services:
     container_name: {{ login }}_{{ website_name }}_db
     restart: always
     environment:
-      - MYSQL_DATABASE=lolmysql
-      - MYSQL_USER=myuser
-      - MYSQL_PASSWORD=mypassword
-      - MYSQL_ROOT_PASSWORD=mypassword
+      - MYSQL_DATABASE={{ mysql_db_name }}
+      - MYSQL_USER={{ mysql_db_user }}
+      - MYSQL_PASSWORD={{ mysql_db_user_password }}
+      - MYSQL_ROOT_PASSWORD={{ mysql_db_root_password }}
     volumes:
       - /dbs/{{ login }}/{{ website_name }}/mysql:/var/lib/mysql
 {%- endif %}

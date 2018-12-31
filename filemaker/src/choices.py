@@ -1,9 +1,22 @@
+"""
+Here are the questions that will be displayed to the user.
+All variables found in the templates should be assigned to a question
+"""
+
 import json
-from pprint import pprint
+# from pprint import pprint
 from typing import List, Tuple, Any
 
 
 class Question:
+    """
+    Represents a question that will be displayed to the user.
+    If `boolean` id True, the answer should be `True` or `False` (~checkbox).
+    If `parents` is not empty, the question wll only be displayed when one of the conditions is fulfilled
+        Conditions are under the format [(question1, answer1), (question2, answer2)]. The question will be
+        displayed only if the answer to `question1` is `answer1` or if the answer to `question2` is `answer2`.
+    If `choices` is not empty, the only acceptable solutions are the ones that are listed.
+    """
 
     def __init__(self, label="", desc="", info="", boolean=False, default=None, parent=None, choices=None):
         self.label: str = label
@@ -16,11 +29,11 @@ class Question:
         self.answer: Any = default
 
     def __repr__(self) -> str:
-        return f"Question{{label={self.label}, answer={self.answer}, choices={self.choices}}}"
+        return str(self.to_dict())
 
     def to_dict(self):
-        return {"type": "question",
-                "label": self.label,
+        """Standard dict that can be transformed into a JSON"""
+        return {"label": self.label,
                 "desc": self.desc,
                 "info": self.info,
                 "boolean": self.boolean,
@@ -29,14 +42,6 @@ class Question:
                 "choices": self.choices,
                 "answer": self.answer,
                 }
-
-    def add_parent(self, *parents):
-        for parent in parents:
-            self.parents.append(parent)
-
-    def add_choice(self, *choices):
-        for choice in choices:
-            self.choices.append(choice)
 
 
 all_questions = [
@@ -101,7 +106,7 @@ all_questions = [
 
     Question(label="mysql_db_name",
              desc="Database name",
-             info="This will create a phpmyadmin server",
+             info="Name of the database used by the code",
              default="",
              parent=[("use_mysql", True)],
              ),
@@ -170,5 +175,5 @@ all_questions_json = json.dumps(all_questions_dict)
 
 
 if __name__ == "__main__":
-    # print(root_choice_json)
-    pprint(all_questions_dict, width=180)
+    print("\n".join(str(question) for question in all_questions))
+    # pprint(all_questions_dict, width=180)

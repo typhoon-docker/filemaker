@@ -1,3 +1,7 @@
+"""
+Maps the answer to the "template" question to the dockerfile and docker-compose templates to use
+"""
+
 template_selector = {
     "static": {
         "dockerfile": None,
