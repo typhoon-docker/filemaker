@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Any, Optional
 
 import config
 
@@ -6,7 +7,7 @@ import config
 _orig_dir = os.path.dirname(os.path.realpath(__file__))
 
 
-def resolve_path(*path):
+def resolve_path(*path: str):
     """Resolve any path based on the project root.
     resolve_path('foo', 'bar') will give an absolute path to your_project_directory/foo/bar
     If the path is already absolute, it will stay absolute
@@ -14,7 +15,7 @@ def resolve_path(*path):
     return os.path.abspath(os.path.join(_orig_dir, '..', *path))
 
 
-def get_docker_templates(params):
+def get_docker_templates(params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if params["template"] == "static":
         return {"dockerfiles": [],
                 "docker_compose": "static",
@@ -41,13 +42,13 @@ def get_docker_templates(params):
     return None
 
 
-def get_clone_path(params):
+def get_clone_path(params: Dict[str, Any]):
     return os.path.join(config.CLONE_ROOT, params["login"], params["website_name"])
 
 
-def get_dockerfile_path(image_name):
+def get_dockerfile_path(image_name: str):
     return os.path.join(config.DOCKERFILE_ROOT, image_name, "Dockerfile")
 
 
-def get_docker_compose_path(params):
+def get_docker_compose_path(params: Dict[str, Any]):
     return os.path.join(config.DOCKER_COMPOSE_ROOT, f"{params['login']}-{params['website_name']}", "docker-compose.yml")

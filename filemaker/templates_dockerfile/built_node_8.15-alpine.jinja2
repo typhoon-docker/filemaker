@@ -7,16 +7,16 @@ WORKDIR /typhoon
 ENV PATH /typhoon/node_modules/.bin:$PATH
 
 # Package requirements
-{% for bf in dependencies_files %}COPY /sites/{{ login }}/{{ website_name }}/{{ bf }} /typhoon/{{ bf }}
+{% for bf in dependencies_files %}COPY /typhoon_sites/{{ login }}/{{ website_name }}/{{ bf }} /typhoon/{{ bf }}
 {% endfor %}
 {% if dependencies_files %}RUN yarn
 {% endif %}
 
 # Source code
-COPY /sites/{{ login }}/{{ website_name }} /typhoon
+COPY /typhoon_sites/{{ login }}/{{ website_name }} /typhoon
 
 {% if env_variables %}# Environment variables
-ENV env_variables
+ENV {{ env_variables }}
 {% endif %}
 
 # Build the code

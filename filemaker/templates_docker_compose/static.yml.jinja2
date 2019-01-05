@@ -10,7 +10,7 @@ services:
       - LETSENCRYPT_HOST={{ website_name }}.typhoon.viarezo.fr
       - LETSENCRYPT_EMAIL={{ email_address }}
     volumes:
-      - /sites/{{ login }}/{{ website_name }}/{% if root_folder %}{{ root_folder }}/{% endif %}:/usr/share/nginx/html
+      - /typhoon_sites/{{ login }}/{{ website_name }}/{% if root_folder %}{{ root_folder }}/{% endif %}:/usr/share/nginx/html
 
 networks:
   default:

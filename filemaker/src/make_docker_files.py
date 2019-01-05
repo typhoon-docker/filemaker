@@ -64,7 +64,10 @@ def make_dockerfiles_and_docker_compose(message_data):
         docker_compose_template = None
 
     # Cut the start script: 'python "my server.py"' -> '["python", "my server.py"]'
-    params["start_script"] = "[" + ", ".join(f'"{a}"' for a in shlex.split(params["start_script"])) + "]"
+    try:
+        params["start_script"] = "[" + ", ".join(f'"{a}"' for a in shlex.split(params["start_script"])) + "]"
+    except Exception as e:
+        params["start_script"] = f"[]  # Error: {e}"
 
     # Cut the exposed ports
     if params["exposed_ports"]:

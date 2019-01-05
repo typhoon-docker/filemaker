@@ -5,7 +5,7 @@ If you want to locally override some of them, make a `local.py` file next to thi
 and change their values in it.
 """
 
-CLONE_ROOT = "/sites"
-DOCKERFILE_ROOT = "/dockerfile"
-DOCKER_COMPOSE_ROOT = "/docker-compose"
-PERSISTENT_VOLUMES_ROOT = "/volumes"
+CLONE_ROOT = "/typhoon_sites"
+DOCKERFILE_ROOT = "/typhoon_dockerfile"
+DOCKER_COMPOSE_ROOT = "/typhoon_docker_compose"
+PERSISTENT_VOLUMES_ROOT = "/typhoon_volumes"

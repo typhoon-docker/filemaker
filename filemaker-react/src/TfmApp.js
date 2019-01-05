@@ -96,7 +96,7 @@ class TfmApp extends Component {
     let table = []
     this.state.dockerfile.forEach(df =>
       table.push(
-        <div className="TfmApp-file">
+        <div className="TfmApp-file" key={df.image}>
           <h2 className="TfmApp-file-title">Dockerfile {df.image}:</h2>
           <div className="TfmApp-file-content" id="dockerfile">
             <pre>{df.dockerfile}</pre>
@@ -133,7 +133,7 @@ class TfmApp extends Component {
           })}
           <input className="TfmApp-send-button" type="submit" value="Send" name="send_button" onClick={this.sendHandler} />
 
-          {this.displayDockerfiles()}
+          {this.makeDockerfileComponents()}
 
           {/* <div className="TfmApp-file">
             <h2 className="TfmApp-file-title">Dockerfile:</h2>

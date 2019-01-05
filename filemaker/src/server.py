@@ -5,6 +5,8 @@
 Flask server to create and display Dockerfile and docker-compose.yml files
 """
 
+from typing import List, Dict, Any
+
 from flask import Flask
 from flask_socketio import SocketIO, emit
 
@@ -40,9 +42,9 @@ def get_questions():
 @socketio.on("form_changed", namespace="/typhoon")
 def form_changed(message):
     params_dfs_and_dc = make_dockerfiles_and_docker_compose(message.get("data", []))
-    params = params_dfs_and_dc["params"]
-    dockerfiles_output = params_dfs_and_dc["dockerfiles"]
-    docker_compose_output = params_dfs_and_dc["docker_compose"]
+    params: Dict[str, Any] = params_dfs_and_dc["params"]
+    dockerfiles_output: List[Dict[str, str]] = params_dfs_and_dc["dockerfiles"]
+    docker_compose_output: str = params_dfs_and_dc["docker_compose"]
 
     # Send through socket
     emit("dockerfile", {"data": dockerfiles_output})

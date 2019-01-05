@@ -5,16 +5,16 @@ RUN mkdir /typhoon
 WORKDIR /typhoon
 
 {% if requirements_path %}# Python package requirements
-COPY /sites/{{ login }}/{{ website_name }}/{{ requirements_path }} /typhoon/{{ requirements_path }}
+COPY /typhoon_sites/{{ login }}/{{ website_name }}/{{ requirements_path }} /typhoon/{{ requirements_path }}
 
 RUN pip3 install -U pip --no-cache-dir && pip3 install -r /typhoon/{{ requirements_path }} --no-cache-dir
 {% endif %}
 
 # Python source code
-COPY /sites/{{ login }}/{{ website_name }} /typhoon
+COPY /typhoon_sites/{{ login }}/{{ website_name }} /typhoon
 
 {% if env_variables %}# Environment variables
-ENV env_variables
+ENV {{ env_variables }}
 {% endif %}
 
 {% if build_script %}RUN cd /typhoon && {{ build_script }}

@@ -31,7 +31,7 @@ def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[s
     process.stdout.close()
 
 
-def clone_or_pull_code(params):
+def clone_or_pull_code(params: Dict[str, Any]):
     clone_dir = utils.get_clone_path(params)
     os.makedirs(clone_dir, exist_ok=True)
     if os.path.exists(os.path.join(clone_dir, ".git")):
@@ -41,21 +41,24 @@ def clone_or_pull_code(params):
     return cmd
 
 
-def write_dockerfile(params, dockerfile_output):
-    file_path = utils.get_dockerfile_path(params)
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, "w") as f:
-        f.write(dockerfile_output)
+def write_dockerfiles(dockerfile_output: List[Dict[str, str]]):
+    for ti in dockerfile_output:
+        image = ti["image"]
+        dockerfile = ti["dockerfile"]
+        file_path = utils.get_dockerfile_path(image)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w") as f:
+            f.write(dockerfile)
 
 
-def write_docker_compose(params, docker_compose_output):
+def write_docker_compose(params: Dict[str, Any], docker_compose_output: str):
     file_path = utils.get_docker_compose_path(params)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "w") as f:
         f.write(docker_compose_output)
 
 
-def build_docker_image(params):
+def build_docker_image(params: Dict[str, Any]):
     dockerfiles_info = utils.get_docker_templates(params).get("dockerfiles")
     for dockerfile in dockerfiles_info:
         img_name = dockerfile.get("image")
@@ -63,22 +66,17 @@ def build_docker_image(params):
         # TODO
 
 
-def docker_compose_up(params):
+def docker_compose_up(params: Dict[str, Any]):
     dc_path = utils.get_docker_compose_path(params)
     # TODO
 
 
-def build_and_run(params: Dict[str, Any], dockerfile_output: str, docker_compose_output: str,
+def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]], docker_compose_output: str,
                   socket_callback: Callable[[str], None]):
     cmd0 = clone_or_pull_code(params)
     socket_callback("=== clone_or_pull_code ===")
     run_process_send_to_socket(cmd0, socket_callback)
     socket_callback("\n")
 
-    write_dockerfile(params, dockerfile_output)
+    write_dockerfiles(dockerfile_output)
     write_docker_compose(params, docker_compose_output)
-
-    cmd0 = clone_or_pull_code(params)
-    socket_callback("=== clone_or_pull_code ===")
-    run_process_send_to_socket(cmd0, socket_callback)
-    socket_callback("\n")

@@ -17,7 +17,7 @@ services:
 {%- endif %}
 {%- if persistent_source_dir %}
     volumes:
-      - /sites/{{ login }}/{{ website_name }}/{% if root_folder %}{{ root_folder }}/{% endif %}:/var/www/html/
+      - /typhoon_sites/{{ login }}/{{ website_name }}/{% if root_folder %}{{ root_folder }}/{% endif %}:/var/www/html/
 {%- endif %}
 
 {%- if use_mysql %}
