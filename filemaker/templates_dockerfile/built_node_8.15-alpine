@@ -1,0 +1,29 @@
+# === Build environment ===
+FROM node:8.15-alpine as builder
+
+# Setup
+RUN mkdir /typhoon
+WORKDIR /typhoon
+ENV PATH /typhoon/node_modules/.bin:$PATH
+
+# Package requirements
+{% for bf in dependencies_files %}COPY /sites/{{ login }}/{{ website_name }}/{{ bf }} /typhoon/{{ bf }}
+{% endfor %}
+{% if dependencies_files %}RUN yarn
+{% endif %}
+
+# Source code
+COPY /sites/{{ login }}/{{ website_name }} /typhoon
+
+{% if env_variables %}# Environment variables
+ENV env_variables
+{% endif %}
+
+# Build the code
+RUN yarn build
+
+# === Production environment ===
+FROM nginx:1.15-alpine
+COPY --from=builder /typhoon/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
