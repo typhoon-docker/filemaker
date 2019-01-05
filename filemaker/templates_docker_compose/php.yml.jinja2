@@ -43,7 +43,7 @@ services:
       - PMA_HOST=db
       - PMA_PORT=3306
       - MYSQL_USERNAME=root
-      - MYSQL_ROOT_PASSWORD=mypassword
+      - MYSQL_ROOT_PASSWORD={{ mysql_db_root_password }}
       - VIRTUAL_HOST={{ website_name }}-phpmyadmin.typhoon.viarezo.fr
       - LETSENCRYPT_HOST={{ website_name }}-phpmyadmin.typhoon.viarezo.fr
       - LETSENCRYPT_EMAIL={{ email_address }}

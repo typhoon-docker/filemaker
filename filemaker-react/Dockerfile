@@ -13,6 +13,8 @@ RUN yarn
 # Source code
 COPY . /typhoon
 
+RUN mv /typhoon/prod.env /typhoon/.env
+
 # Build the code
 RUN yarn build
 

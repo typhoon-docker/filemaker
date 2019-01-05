@@ -11,13 +11,13 @@ class TfmApp extends Component {
     super(props);
 
     this.state = {
-      dockerfile: "No Dockerfile",         // Displayed Dockerfile
-      dockerCompose: "No docker_compose",  // Displayed docker-compose file
+      dockerfile: [],                      // Displayed Dockerfile
+      dockerCompose: null,                 // Displayed docker-compose file
       questions: [],                       // List of all question ids
       questionsData: {},                   // Details for each question, by id
     }
 
-    this.socket = io('https://typhoon-filemaker-back.typhoon.viarezo.fr/typhoon');
+    this.socket = io(process.env.REACT_APP_BACKEND_URL + '/typhoon');
 
     // When receiving the questions, get their label and data, and fill the state with them
     this.socket.on('questions', msg => {
@@ -39,8 +39,9 @@ class TfmApp extends Component {
     this.socket.on('docker_compose', msg => this.setState({dockerCompose: msg.data}));
   }
 
-  sendFormToBackend = () => {
-    this.socket.emit('form_changed', {data: this.state.questions.map(label => ({label, answer: this.state.questionsData[label].answer }))});
+  sendFormToBackend = (validation) => {
+    const sendData = this.state.questions.map(label => ({label, answer: this.state.questionsData[label].answer }));
+    this.socket.emit('form_changed', {validation, data: sendData});
   }
 
   changeHandler = event => {
@@ -51,11 +52,11 @@ class TfmApp extends Component {
     newQuestionsData[name].answer = value;
     this.setState({questionsData: newQuestionsData});
 
-    this.sendFormToBackend();
+    this.sendFormToBackend(false);
   }
 
   sendHandler = event => {
-    this.sendFormToBackend();
+    this.sendFormToBackend(true);
   }
 
   makeQuestionComponent = qData => {
@@ -91,6 +92,20 @@ class TfmApp extends Component {
     }
   }
 
+  makeDockerfileComponents = () => {
+    let table = []
+    this.state.dockerfile.forEach(df =>
+      table.push(
+        <div className="TfmApp-file">
+          <h2 className="TfmApp-file-title">Dockerfile {df.image}:</h2>
+          <div className="TfmApp-file-content" id="dockerfile">
+            <pre>{df.dockerfile}</pre>
+          </div>
+        </div>
+      ));
+    return table
+  }
+
   render() {
     return (
       <div className="TfmApp">
@@ -118,12 +133,14 @@ class TfmApp extends Component {
           })}
           <input className="TfmApp-send-button" type="submit" value="Send" name="send_button" onClick={this.sendHandler} />
 
-          <div className="TfmApp-file">
+          {this.displayDockerfiles()}
+
+          {/* <div className="TfmApp-file">
             <h2 className="TfmApp-file-title">Dockerfile:</h2>
             <div className="TfmApp-file-content" id="dockerfile">
               <pre>{this.state.dockerfile}</pre>
             </div>
-          </div>
+          </div> */}
 
           <div className="TfmApp-file">
             <h2 className="TfmApp-file-title">docker-compose.yml:</h2>
