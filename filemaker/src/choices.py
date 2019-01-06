@@ -84,6 +84,7 @@ all_questions = [
              default="",
              parent=[("template", "python"),
                      ("template", "php"),
+                     ("template", "react"),
                      ],
              ),
     Question(label="start_script",

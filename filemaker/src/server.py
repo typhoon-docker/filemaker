@@ -27,6 +27,7 @@ socketio = SocketIO(app)
 @socketio.on("connect", namespace="/typhoon")
 def test_connect():
     get_questions()
+    emit("log", {"message": "You are connected."})
 
 
 @socketio.on("disconnect", namespace="/typhoon")

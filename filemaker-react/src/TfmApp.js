@@ -15,6 +15,7 @@ class TfmApp extends Component {
       dockerCompose: null,                 // Displayed docker-compose file
       questions: [],                       // List of all question ids
       questionsData: {},                   // Details for each question, by id
+      logs: [],                            // Logs from the backend
     }
 
     this.socket = io(process.env.REACT_APP_BACKEND_URL + '/typhoon');
@@ -37,6 +38,9 @@ class TfmApp extends Component {
 
     // When receiving docker-compose data, display it
     this.socket.on('docker_compose', msg => this.setState({dockerCompose: msg.data}));
+
+    // When receiving logs data, add it to current logs
+    this.socket.on('log', msg => this.setState(state => ({logs: [...state.logs, msg.message]})));
   }
 
   sendFormToBackend = (validation) => {
@@ -92,19 +96,18 @@ class TfmApp extends Component {
     }
   }
 
-  makeDockerfileComponents = () => {
-    let table = []
-    this.state.dockerfile.forEach(df =>
-      table.push(
-        <div className="TfmApp-file" key={df.image}>
-          <h2 className="TfmApp-file-title">Dockerfile {df.image}:</h2>
-          <div className="TfmApp-file-content" id="dockerfile">
-            <pre>{df.dockerfile}</pre>
-          </div>
-        </div>
-      ));
-    return table
-  }
+  makeDockerfileComponents = () => this.state.dockerfile.map(df =>
+    <div className="TfmApp-file" key={df.image}>
+      <h2 className="TfmApp-file-title">Dockerfile {df.image}:</h2>
+      <div className="TfmApp-file-content" id="dockerfile">
+        <pre>{df.dockerfile}</pre>
+      </div>
+    </div>
+  );
+
+  makeLogLines = () => this.state.logs.map((l, i) =>
+    <p key={i} className="TfmApp-logline">{l}</p>
+  );
 
   render() {
     return (
@@ -146,6 +149,13 @@ class TfmApp extends Component {
             <h2 className="TfmApp-file-title">docker-compose.yml:</h2>
             <div className="TfmApp-file-content" id="docker_compose">
               <pre>{this.state.dockerCompose}</pre>
+            </div>
+          </div>
+
+          <div className="TfmApp-file">
+            <h2 className="TfmApp-file-title">Logs:</h2>
+            <div className="TfmApp-file-content" id="logs">
+              {this.makeLogLines()}
             </div>
           </div>
         </div>

@@ -10,11 +10,12 @@ from typing import List, Dict, Any, Union, Callable
 import src.utils as utils
 
 
-def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[str], None]):
+def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[str], None], **kwargs):
+    print(f">>> Will run: {cmd}")
     callback(f">>> Will run: {cmd}")
 
     # First, we open a handle to the external command to be run.
-    process = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.STDOUT)
+    process = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.STDOUT, **kwargs)
 
     # Wait for the command to finish
     # (.poll() will return the exit code, None if it's still running)
@@ -23,22 +24,31 @@ def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[s
 
     # Then we send whatever output the command gave us back via the socket
     try:
-        callback(process.stdout.read().decode("utf-8"))
+        line = process.stdout.read().decode("utf-8")
+        print(f"process>>> {line}")
+        callback(line)
     except Exception as e:
-        pass
+        print(f"Exception: {e}")
 
     process.stdin.close()
     process.stdout.close()
 
+    print(f">>> Finished: {cmd}")
+    callback(f">>> Finished: {cmd}")
 
-def clone_or_pull_code(params: Dict[str, Any]):
+
+def clone_or_pull_code(params: Dict[str, Any], callback: Callable[[str], None]):
     clone_dir = utils.get_clone_path(params)
     os.makedirs(clone_dir, exist_ok=True)
     if os.path.exists(os.path.join(clone_dir, ".git")):
+        print("Directory exists, pulling new code")
+        callback("Directory exists, pulling new code")
         cmd = ["git", "pull"]
     else:
-        cmd = ["git", "clone", params["repository_url"]]
-    return cmd
+        print("Directory not found, cloning")
+        callback("Directory not found, cloning")
+        cmd = ["git", "clone", params["repository_url"], clone_dir]
+    return cmd, clone_dir
 
 
 def write_dockerfiles(dockerfile_output: List[Dict[str, str]]):
@@ -48,6 +58,7 @@ def write_dockerfiles(dockerfile_output: List[Dict[str, str]]):
         file_path = utils.get_dockerfile_path(image)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w") as f:
+            print(f"Writing Dockerfile in {file_path}...")
             f.write(dockerfile)
 
 
@@ -55,6 +66,7 @@ def write_docker_compose(params: Dict[str, Any], docker_compose_output: str):
     file_path = utils.get_docker_compose_path(params)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "w") as f:
+        print(f"Writing docker_compose in {file_path}...")
         f.write(docker_compose_output)
 
 
@@ -73,10 +85,22 @@ def docker_compose_up(params: Dict[str, Any]):
 
 def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]], docker_compose_output: str,
                   socket_callback: Callable[[str], None]):
-    cmd0 = clone_or_pull_code(params)
+    cmd, clone_dir = clone_or_pull_code(params, socket_callback)
+    print("=== clone_or_pull_code ===")
     socket_callback("=== clone_or_pull_code ===")
-    run_process_send_to_socket(cmd0, socket_callback)
+    run_process_send_to_socket(cmd, socket_callback, cwd=clone_dir)
     socket_callback("\n")
 
+    print("=== write_dockerfiles ===")
+    socket_callback("=== write_dockerfiles ===")
     write_dockerfiles(dockerfile_output)
+
+    print("=== write_docker_compose ===")
+    socket_callback("=== write_docker_compose ===")
     write_docker_compose(params, docker_compose_output)
+
+    # TODO build Docker image
+    # TODO docker-compose up ?? (Needs down as well)
+
+    print("=== All done ===")
+    socket_callback("=== All done ===")
