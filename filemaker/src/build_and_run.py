@@ -70,18 +70,25 @@ def write_docker_compose(params: Dict[str, Any], docker_compose_output: str):
         f.write(docker_compose_output)
 
 
-def build_docker_image(params: Dict[str, Any]):
+def build_docker_image(params: Dict[str, Any], callback: Callable[[str], None]):
     dockerfiles_info = utils.get_docker_templates(params).get("dockerfiles")
     for dockerfile in dockerfiles_info:
         img_name = dockerfile.get("image")
-        img_path = utils.get_dockerfile_path(img_name)
+        df_path = utils.get_dockerfile_path(img_name)
         ctx = utils.get_dockerfile_context(params)
         # TODO
+        # go to ctx
+        # docker build -t img_name -f df_path .
+        run_process_send_to_socket(["docker", "build", "-t", img_name, "-f", df_path], callback, cwd=ctx)
 
 
-def docker_compose_up(params: Dict[str, Any]):
+def docker_compose_up(params: Dict[str, Any], callback: Callable[[str], None]):
     dc_path = utils.get_docker_compose_path(params)
     # TODO
+    # go to dc_path's directory
+    # docker-compose up
+    run_process_send_to_socket(["docker-compose", "down"], callback, cwd=dc_path)
+    run_process_send_to_socket(["docker-compose", "up"], callback, cwd=dc_path)
 
 
 def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]], docker_compose_output: str,
@@ -101,7 +108,14 @@ def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]
     write_docker_compose(params, docker_compose_output)
 
     # TODO build Docker image
+    print("=== build_docker_image ===")
+    socket_callback("=== build_docker_image ===")
+    build_docker_image(params, socket_callback)
+
     # TODO docker-compose up ?? (Needs down as well)
+    print("=== docker_compose_up ===")
+    socket_callback("=== docker_compose_up ===")
+    docker_compose_up(params, socket_callback)
 
     print("=== All done ===")
     socket_callback("=== All done ===")
