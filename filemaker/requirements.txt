@@ -1,3 +1,4 @@
 jinja2
 Flask
 flask-socketio
+eventlet
