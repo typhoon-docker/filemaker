@@ -6,6 +6,7 @@ services:
     container_name: 2015bernarda_typhoon-filemaker-back_python
     restart: always
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - /typhoon_sites:/typhoon_sites
       - /typhoon_dockerfile:/typhoon_dockerfile
       - /typhoon_docker_compose:/typhoon_docker_compose
