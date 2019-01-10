@@ -10,7 +10,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 {%- if persistent_source_dir %}
 VOLUME /var/www/html
 {%- else %}
-COPY /typhoon_sites/{{ login }}/{{ website_name }}/{% if root_folder %}{{ root_folder }}/{% endif %} /var/www/html/
+COPY . /var/www/html/
 {%- endif %}
 
 {% if env_variables %}# Environment variables

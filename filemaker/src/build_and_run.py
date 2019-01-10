@@ -75,6 +75,7 @@ def build_docker_image(params: Dict[str, Any]):
     for dockerfile in dockerfiles_info:
         img_name = dockerfile.get("image")
         img_path = utils.get_dockerfile_path(img_name)
+        ctx = utils.get_dockerfile_context(params)
         # TODO
 
 
