@@ -4,6 +4,11 @@ FROM python:3.7-slim-stretch
 RUN mkdir /typhoon
 WORKDIR /typhoon
 
+# System package requirements
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Python package requirements
 COPY ./requirements.txt /typhoon/requirements.txt
 
