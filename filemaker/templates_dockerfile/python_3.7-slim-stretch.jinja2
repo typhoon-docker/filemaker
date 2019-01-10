@@ -4,11 +4,16 @@ FROM python:3.7-slim-stretch
 RUN mkdir /typhoon
 WORKDIR /typhoon
 
-{% if requirements_path %}# Python package requirements
-COPY {{ requirements_path }} /typhoon/{{ requirements_path }}
+{% if system_dependencies %}# System package requirements
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    {{ system_dependencies }}
+    && rm -rf /var/lib/apt/lists/*{% endif %}
 
-RUN pip3 install -U pip --no-cache-dir && pip3 install -r /typhoon/{{ requirements_path }} --no-cache-dir
-{% endif %}
+{% if dependencies_files %}# Python package requirements{% endif %}
+{% for df in dependencies_files %}COPY {{ df }} /typhoon/{{ df }}
+{% endfor %}
+{% if dependencies_files %}RUN pip3 install -U pip --no-cache-dir \
+    {% for df in dependencies_files %} && pip3 install -r /typhoon/{{ df }} --no-cache-dir{% endfor %}{% endif %}
 
 # Python source code
 COPY . /typhoon

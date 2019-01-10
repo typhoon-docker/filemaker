@@ -3,6 +3,12 @@ FROM php:7.3-apache
 # Setup
 WORKDIR "/var/www/html"
 
+{% if system_dependencies %}# System package requirements
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    {{ system_dependencies }}
+    && rm -rf /var/lib/apt/lists/*
+{% endif %}
+
 {%- if use_mysql %}
 RUN docker-php-ext-install pdo pdo_mysql
 {%- endif %}
