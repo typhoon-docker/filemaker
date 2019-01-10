@@ -20,7 +20,7 @@ def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[s
         process = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.STDOUT, **kwargs)
     except Exception as e:
         print(f"Exception: {e}")
-        callback(f"exception>>> {e}\n")
+        callback(f"exception>>> {e}")
         return
 
     # Wait for the command to finish
@@ -32,10 +32,10 @@ def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[s
     try:
         line = process.stdout.read().decode("utf-8")
         print(f"process>>> {line}")
-        callback(f"process>>> {line}\n")
+        callback(f"process>>> {line}")
     except Exception as e:
         print(f"Exception: {e}")
-        callback(f"exception>>> {e}\n")
+        callback(f"exception>>> {e}")
 
     process.stdin.close()
     process.stdout.close()
@@ -105,7 +105,6 @@ def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]
     print("=== clone_or_pull_code ===")
     socket_callback("=== clone_or_pull_code ===")
     run_process_send_to_socket(cmd, socket_callback, cwd=clone_dir)
-    socket_callback("\n")
 
     print("=== write_dockerfiles ===")
     socket_callback("=== write_dockerfiles ===")

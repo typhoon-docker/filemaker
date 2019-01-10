@@ -70,4 +70,7 @@ html {
 
 .TfmApp-logline {
   margin: 0px;
+  white-space: pre-line;
+  font-family: monospace;
+  word-break: break-all;
 }
