@@ -95,8 +95,8 @@ def docker_compose_up(params: Dict[str, Any], callback: Callable[[str], None]):
     # TODO
     # go to dc_path's directory
     # docker-compose up
-    run_process_send_to_socket(["docker-compose", "down"], callback, cwd=dc_dir)
-    run_process_send_to_socket(["docker-compose", "up"], callback, cwd=dc_dir)
+    # run_process_send_to_socket(["docker-compose", "down"], callback, cwd=dc_dir)
+    # run_process_send_to_socket(["docker-compose", "up"], callback, cwd=dc_dir)
 
 
 def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]], docker_compose_output: str,
