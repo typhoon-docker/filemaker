@@ -79,16 +79,17 @@ def build_docker_image(params: Dict[str, Any], callback: Callable[[str], None]):
         # TODO
         # go to ctx
         # docker build -t img_name -f df_path .
-        run_process_send_to_socket(["docker", "build", "-t", img_name, "-f", df_path], callback, cwd=ctx)
+        run_process_send_to_socket(["docker", "build", "-t", img_name, "-f", df_path, "."], callback, cwd=ctx)
 
 
 def docker_compose_up(params: Dict[str, Any], callback: Callable[[str], None]):
     dc_path = utils.get_docker_compose_path(params)
+    dc_dir = os.path.dirname(dc_path)
     # TODO
     # go to dc_path's directory
     # docker-compose up
-    run_process_send_to_socket(["docker-compose", "down"], callback, cwd=dc_path)
-    run_process_send_to_socket(["docker-compose", "up"], callback, cwd=dc_path)
+    run_process_send_to_socket(["docker-compose", "down"], callback, cwd=dc_dir)
+    run_process_send_to_socket(["docker-compose", "up"], callback, cwd=dc_dir)
 
 
 def build_and_run(params: Dict[str, Any], dockerfile_output: List[Dict[str, str]], docker_compose_output: str,
