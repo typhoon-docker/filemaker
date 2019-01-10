@@ -22,7 +22,7 @@ def get_docker_templates(params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
                 }
 
     if params["template"] == "python":
-        return {"dockerfiles": [{"template": "python_3.7-alpine",
+        return {"dockerfiles": [{"template": "python_3.7-slim-stretch",
                                  "image": f"{params['login']}-{params['website_name']}-python"}],
                 "docker_compose": "python",
                 }

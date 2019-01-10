@@ -23,7 +23,7 @@ params = {
 }
 
 
-template = env.get_template("python_3.7-alpine.jinja2")
+template = env.get_template("python_3.7-slim-stretch.jinja2")
 params["start_script"] = params["start_script"].split(" ")  # TODO
 output = template.render(**params)
 
