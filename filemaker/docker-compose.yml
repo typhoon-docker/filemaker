@@ -5,6 +5,11 @@ services:
     image: typhoon-filemaker-back
     container_name: 2015bernarda_typhoon-filemaker-back_python
     restart: always
+    volumes:
+      - /typhoon_sites:/typhoon_sites
+      - /typhoon_dockerfile:/typhoon_dockerfile
+      - /typhoon_docker_compose:/typhoon_docker_compose
+      - /typhoon_volumes:/typhoon_volumes
     environment:
       - VIRTUAL_HOST=typhoon-filemaker-back.typhoon.viarezo.fr
       - LETSENCRYPT_HOST=typhoon-filemaker-back.typhoon.viarezo.fr

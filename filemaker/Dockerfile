@@ -17,6 +17,12 @@ RUN pip3 install -U pip --no-cache-dir && pip3 install -r /typhoon/requirements.
 # Python source code
 COPY . /typhoon
 
+# Volumes
+VOLUME /typhoon_sites
+VOLUME /typhoon_dockerfile
+VOLUME /typhoon_docker_compose
+VOLUME /typhoon_volumes
+
 # Expose the ports for the Flask server
 EXPOSE 8056
 
