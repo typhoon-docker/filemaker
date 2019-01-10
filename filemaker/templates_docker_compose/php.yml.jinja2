@@ -7,8 +7,10 @@ services:
     restart: always
     environment:
       - VIRTUAL_HOST={{ website_name }}.typhoon.viarezo.fr
+{%- if use_https %}
       - LETSENCRYPT_HOST={{ website_name }}.typhoon.viarezo.fr
       - LETSENCRYPT_EMAIL={{ email_address }}
+{%- endif %}
 {%- if use_mysql %}
     depends_on:
       - db
