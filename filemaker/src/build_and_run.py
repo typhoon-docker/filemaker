@@ -15,7 +15,13 @@ def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[s
     callback(f">>> Will run: {cmd}")
 
     # First, we open a handle to the external command to be run.
-    process = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.STDOUT, **kwargs)
+    # Then we send whatever output the command gave us back via the socket
+    try:
+        process = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.STDOUT, **kwargs)
+    except Exception as e:
+        print(f"Exception: {e}")
+        callback(f"exception>>> {e}\n")
+        return
 
     # Wait for the command to finish
     # (.poll() will return the exit code, None if it's still running)
@@ -26,9 +32,10 @@ def run_process_send_to_socket(cmd: Union[str, List[str]], callback: Callable[[s
     try:
         line = process.stdout.read().decode("utf-8")
         print(f"process>>> {line}")
-        callback(line)
+        callback(f"process>>> {line}\n")
     except Exception as e:
         print(f"Exception: {e}")
+        callback(f"exception>>> {e}\n")
 
     process.stdin.close()
     process.stdout.close()
