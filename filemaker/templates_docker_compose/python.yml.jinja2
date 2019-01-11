@@ -11,6 +11,12 @@ services:
       - LETSENCRYPT_HOST={{ website_name }}.typhoon.viarezo.fr
       - LETSENCRYPT_EMAIL={{ email_address }}
 {%- endif %}
+{%- if use_mysql %}
+    depends_on:
+      - db
+    links:
+      - db:mysql
+{%- endif %}
 
 {%- if use_mysql %}
   db:

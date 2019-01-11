@@ -2,7 +2,8 @@
 # -*-coding:utf-8-*-
 
 """
-Flask server to create and display Dockerfile and docker-compose.yml files
+Project entrypoint.
+Flask server to create and display Dockerfile and docker-compose.yml files.
 """
 
 from typing import List, Dict, Any
@@ -19,29 +20,28 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 
-# @app.route("/")
-# def index():
-#     return index_template.render(labels=labels, placeholders=placeholders)
-
-
 @socketio.on("connect", namespace="/typhoon")
 def test_connect():
+    """Called when a client connects to the socket"""
     get_questions()
     emit("log", {"message": "You are connected."})
 
 
 @socketio.on("disconnect", namespace="/typhoon")
 def test_disconnect():
+    """Called when a client disconnects from the socket"""
     print("Client disconnected")
 
 
 @socketio.on("questions", namespace="/typhoon")
 def get_questions():
+    """Called when a client requests the list of questions"""
     emit("questions", {"data": all_questions_json})
 
 
 @socketio.on("form_changed", namespace="/typhoon")
 def form_changed(message):
+    """Called when a client edits the form, with `validation` = true when clicked on the Send button"""
     params_dfs_and_dc = make_dockerfiles_and_docker_compose(message.get("data", []))
     params: Dict[str, Any] = params_dfs_and_dc["params"]
     dockerfiles_output: List[Dict[str, str]] = params_dfs_and_dc["dockerfiles"]
@@ -56,4 +56,4 @@ def form_changed(message):
 
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=8056, debug=True)
+    socketio.run(app, host="0.0.0.0", port=8056)

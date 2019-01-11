@@ -1,3 +1,8 @@
+"""
+Functions to manage path
+Function to get the right templates given the query params
+"""
+
 import os
 from typing import Dict, Any, Optional
 

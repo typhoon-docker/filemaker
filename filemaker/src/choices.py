@@ -4,14 +4,13 @@ All variables found in the templates should be assigned to a question
 """
 
 import json
-# from pprint import pprint
 from typing import List, Tuple, Any
 
 
 class Question:
     """
     Represents a question that will be displayed to the user.
-    If `boolean` id True, the answer should be `True` or `False` (~checkbox).
+    If `boolean` is True, the answer should be `True` or `False` (~checkbox).
     If `parents` is not empty, the question wll only be displayed when one of the conditions is fulfilled
         Conditions are under the format [(question1, answer1), (question2, answer2)]. The question will be
         displayed only if the answer to `question1` is `answer1` or if the answer to `question2` is `answer2`.
@@ -212,4 +211,3 @@ all_questions_json = json.dumps(all_questions_dict)
 
 if __name__ == "__main__":
     print("\n".join(str(question) for question in all_questions))
-    # pprint(all_questions_dict, width=180)

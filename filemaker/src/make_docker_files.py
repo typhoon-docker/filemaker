@@ -39,8 +39,9 @@ def make_dockerfiles_and_docker_compose(message_data):
       "dockerfiles": list of {"image": "image_name", "dockerfile": "content"},
       "docker_compose": "content" }
     """
-    params: Dict[str, Any] = default_params.copy()
 
+    # Start with the default params and override with the ones given in the message data
+    params: Dict[str, Any] = default_params.copy()
     for d in message_data:
         if d.get("label") in params:
             params[d.get("label")] = d.get("answer")
@@ -100,12 +101,10 @@ def make_dockerfiles_and_docker_compose(message_data):
         docker_compose_template = env_docker_compose.get_template(docker_compose_template + ".yml.jinja2")
         docker_compose_output = docker_compose_template.render(**params)
 
-    # dockerfiles: list of {image: image_name, dockerfile: content}
-    # docker_compose: content
+    # Return everything
     return {"params": params, "dockerfiles": dockerfiles_output, "docker_compose": docker_compose_output}
 
 
 if __name__ == "__main__":
     print("--- Default params ---")
     pprint(default_params)
-    print('--- ---')
