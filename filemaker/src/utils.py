@@ -46,6 +46,12 @@ def get_docker_templates(params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
                 "docker_compose": "standalone",
                 }
 
+    if params["template"] == "node":
+        return {"dockerfiles": [{"template": "node_8.15-stretch-slim",
+                                 "image": f"{params['login']}-{params['website_name']}-node"}],
+                "docker_compose": "node",
+                }
+
     return None
 
 

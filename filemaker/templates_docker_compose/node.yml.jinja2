@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  code:
+    image: {{ login }}-{{ website_name }}-node
+    container_name: {{ login }}_{{ website_name }}_node
+    restart: always
+    environment:
+      - VIRTUAL_HOST={{ website_name }}.typhoon.viarezo.fr
+{%- if use_https %}
+      - LETSENCRYPT_HOST={{ website_name }}.typhoon.viarezo.fr
+      - LETSENCRYPT_EMAIL={{ email_address }}
+{%- endif %}
+{%- if use_mysql %}
+    depends_on:
+      - db
+    links:
+      - db:mysql
+{%- endif %}
+
+{%- if use_mysql %}
+  db:
+    image: mysql:5.7
+    container_name: {{ login }}_{{ website_name }}_db
+    restart: always
+    environment:
+      - MYSQL_DATABASE={{ mysql_db_name }}
+      - MYSQL_USER={{ mysql_db_user }}
+      - MYSQL_PASSWORD={{ mysql_db_user_password }}
+      - MYSQL_ROOT_PASSWORD={{ mysql_db_root_password }}
+    volumes:
+      - /dbs/{{ login }}/{{ website_name }}/mysql:/var/lib/mysql
+{%- endif %}
+
+{%- if mysql_use_phpmyadmin %}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.7
+    container_name: {{ login }}_{{ website_name }}_phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_ROOT_PASSWORD={{ mysql_db_root_password }}
+      - VIRTUAL_HOST={{ website_name }}-phpmyadmin.typhoon.viarezo.fr
+      - LETSENCRYPT_HOST={{ website_name }}-phpmyadmin.typhoon.viarezo.fr
+      - LETSENCRYPT_EMAIL={{ email_address }}
+{%- endif %}
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

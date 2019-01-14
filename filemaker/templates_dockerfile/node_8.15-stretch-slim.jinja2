@@ -1,0 +1,43 @@
+FROM node:8.15-stretch-slim
+
+# Setup
+RUN mkdir /typhoon
+WORKDIR /typhoon
+ENV PATH /typhoon/node_modules/.bin:$PATH
+
+{% if system_dependencies %}# System package requirements
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    {{ system_dependencies }}
+    && rm -rf /var/lib/apt/lists/*{% endif %}
+
+{% if custom_install_script %}# Custom installation script
+{% for isd in install_script_dependencies %}COPY {{ isd }} /typhoon/{{ isd }}
+{% endfor %}
+{% if install_script %}RUN cd /typhoon && {{ build_script }}{% endif %}
+{% else %}
+# Package requirements
+{% for bf in dependencies_files %}COPY {{ bf }} /typhoon/{{ bf }}
+{% endfor %}
+{% if dependencies_files %}RUN yarn{% endif %}
+{% endif %}
+
+# Source code
+COPY . /typhoon
+
+{% if env_variables %}# Environment variables
+ENV {{ env_variables }}
+{% endif %}
+
+{% if build_script %}RUN cd /typhoon && {{ build_script }}
+{% endif %}
+
+# Build the code
+RUN yarn build
+
+# Expose the ports for the server
+{% for port in exposed_ports %}EXPOSE {{ port }}
+{% endfor %}
+
+{% if start_script %}# Launch the script which will run the server
+CMD {{ start_script }}
+{% endif %}
