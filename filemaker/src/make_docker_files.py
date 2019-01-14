@@ -88,6 +88,10 @@ def make_dockerfiles_and_docker_compose(message_data):
     if params["dependencies_files"]:
         params["dependencies_files"] = params["dependencies_files"].split(":")
 
+    # Cut the js dependencies_files
+    if params["install_script_dependencies"]:
+        params["install_script_dependencies"] = params["install_script_dependencies"].split(":")
+
     # Create the Dockerfile content
     dockerfiles_output = []
     for ti in dockerfile_template_and_img:

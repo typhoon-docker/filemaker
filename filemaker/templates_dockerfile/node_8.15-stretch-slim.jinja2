@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 {% if custom_install_script %}# Custom installation script
 {% for isd in install_script_dependencies %}COPY {{ isd }} /typhoon/{{ isd }}
 {% endfor %}
-{% if install_script %}RUN cd /typhoon && {{ build_script }}{% endif %}
+{% if install_script %}RUN cd /typhoon && {{ install_script }}{% endif %}
 {% else %}
 # Package requirements
 {% for bf in dependencies_files %}COPY {{ bf }} /typhoon/{{ bf }}
