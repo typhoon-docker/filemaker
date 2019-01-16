@@ -31,9 +31,6 @@ ENV {{ env_variables }}
 {% if build_script %}RUN cd /typhoon && {{ build_script }}
 {% endif %}
 
-# Build the code
-RUN yarn build
-
 # Expose the ports for the server
 {% for port in exposed_ports %}EXPOSE {{ port }}
 {% endfor %}

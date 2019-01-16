@@ -6,6 +6,7 @@ Will create the docker files from the templates, with the given answers
 """
 
 import os
+import re
 from glob import glob
 import shlex
 from pprint import pprint
@@ -97,6 +98,7 @@ def make_dockerfiles_and_docker_compose(message_data):
     for ti in dockerfile_template_and_img:
         dockerfile_template = env_dockerfile.get_template(ti["template"] + ".jinja2")
         dockerfile = dockerfile_template.render(**params)
+        dockerfile = re.sub("\n\n\n+", "\n\n", dockerfile).rstrip("\n") + "\n"
         dockerfiles_output.append({"image": ti["image"], "dockerfile": dockerfile})
 
     # Create the docker-compose content
@@ -104,6 +106,7 @@ def make_dockerfiles_and_docker_compose(message_data):
     if docker_compose_template is not None:
         docker_compose_template = env_docker_compose.get_template(docker_compose_template + ".yml.jinja2")
         docker_compose_output = docker_compose_template.render(**params)
+        docker_compose_output = re.sub("\n\n\n+", "\n\n", docker_compose_output).rstrip("\n") + "\n"
 
     # Return everything
     return {"params": params, "dockerfiles": dockerfiles_output, "docker_compose": docker_compose_output}
