@@ -53,7 +53,7 @@ all_questions = [
     Question(label="email_address",
              desc="Email Address",
              info="Email address of the user",
-             default="nope@student.cs-campus.fr",
+             default="nope@student-cs.fr",
              ),
 
     Question(label="repository_type",

@@ -28,9 +28,14 @@ html {
 }
 
 .form-core {
-  border-radius: 3px;
+  border-radius: 5px;
   border: 1px solid #ddd;
   font-size: 100%;
+}
+
+input.form-core {
+  min-width: 250px;
+  padding: 2px;
 }
 
 .form-info {
