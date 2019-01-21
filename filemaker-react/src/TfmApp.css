@@ -27,7 +27,11 @@ html {
   margin-right: 10px;
 }
 
-.form-core {}
+.form-core {
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  font-size: 100%;
+}
 
 .form-info {
   color: #777;
